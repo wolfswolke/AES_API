@@ -10,6 +10,11 @@ def profile():
             response.set_cookie('session', value='', expires=0)
             return response
         data = mongo.get_data_with_list(user_id, ["token", "username"], mongo_user_collection)
+        if data is None:
+            session_manager.remove_session(request.cookies['session'])
+            response = redirect(url_for('profile'))
+            response.set_cookie('session', value='', expires=0)
+            return response
         user_data = {
             'user_id': user_id,
             'token': data['token'],
