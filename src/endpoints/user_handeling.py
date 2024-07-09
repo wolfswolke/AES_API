@@ -53,7 +53,7 @@ def login():
         if ret_val is None:
             return jsonify({"error": "Internal Server Error"}), 500
         elif ret_val["status"] == "ERROR":
-            return jsonify({"error": ret_val["message"]}), 400
+            return jsonify(ret_val), 400
         else:
             response = jsonify(ret_val)
             session_id = session_manager.create_session(ret_val['user_id'])
