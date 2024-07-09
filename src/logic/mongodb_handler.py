@@ -167,7 +167,7 @@ class Mongo:
             if existing_document:
                 print(f"Game already exists: {game}")
                 client.close()
-                return None
+                return {"status": "error", "message": "Game already exists"}
             new_aes = {}
             for key, default_value in self.game_item.items():
                 new_aes[key] = default_value
@@ -183,7 +183,7 @@ class Mongo:
         except Exception as e:
             print(e)
             # logger.graylog_logger(level="error", handler="mongo_add_aes", message=e)
-            return None
+            return {"status": "error", "message": "Internal Server Error"}
 
     def update_aes(self, guid, key, name, game, uploader):
         try:
