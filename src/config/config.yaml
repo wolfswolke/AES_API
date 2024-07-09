@@ -1,0 +1,18 @@
+global:
+  version: 0.0.1
+  name: aes_api
+local_ips:
+  - 192.168.1.111
+  - 192.168.1.130
+  - 194.208.140.70
+mongodb:
+  host: mongodb://192.168.1.111:27017/
+  db: aes_db
+  db_dev: aes_db_dev
+  aes_collection: aes_collection
+  user_collection: user_collection
+webhooks:
+  discord:
+    use: true
+    urls:
+      - https://discord.com/api/webhooks/1259555136141787219/VbPKWpYoSTTMVMlLuFKOvEEwWB-wU8Xo-o4t-wE_QB_2IpOrqteRp5vf6ApssxghY4J2
