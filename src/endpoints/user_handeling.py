@@ -24,7 +24,7 @@ def profile():
 def register():
     try:
         data = request.json
-        username = data['username'] # todo change to user ID check as Username is not unique
+        username = data['username']
         password = data['password']
         ret_val = mongo.user_handling(username, password, register=True)
         if ret_val is None:
