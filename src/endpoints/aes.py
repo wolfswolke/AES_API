@@ -1,7 +1,7 @@
 from flask_definitions import *
 
 
-@app.route('/api/v1/aes/', methods=['GET'])
+@app.route('/api/v1/aes', methods=['GET'])
 def get_all_aes():
     try:
         aes_list = mongo.get_all_aes()
