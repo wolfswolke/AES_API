@@ -92,7 +92,6 @@ class Mongo:
 
     def get_data_with_list(self, user_id, items, collection):
         try:
-            # todo rework
             document = {}
             user_id = f"{user_id}"
             client = pymongo.MongoClient(self.dyn_server)
@@ -111,6 +110,24 @@ class Mongo:
         except Exception as e:
             # logger.graylog_logger(level="error", handler="mongo_get_data_with_list", message=e)
             return None
+
+    def validate_token(self, token):
+        try:
+            client = pymongo.MongoClient(self.dyn_server)
+            dyn_client_db = client[self.dyn_db]
+            dyn_collection = dyn_client_db[self.user_collection]
+            existing_document = dyn_collection.find_one({"token": token})
+            if existing_document:
+                client.close()
+                return {"status": "success", "message": "Token found", "user_id": existing_document["user_id"]}
+            else:
+                print(f"Token not found: {token}")
+                client.close()
+                return {"status": "error", "message": "Token not found"}
+        except Exception as e:
+            print(e)
+            # logger.graylog_logger(level="error", handler="mongo_validate_token", message=e)
+            return {"status": "error", "message": "Internal Server Error"}
 
     def get_all_aes(self):
         try:
@@ -199,35 +216,6 @@ class Mongo:
         except Exception as e:
             print(e)
             # logger.graylog_logger(level="error", handler="mongo_update_aes", message=e)
-            return None
-
-    def write_data_with_list(self, login, login_steam, items_dict, collection):
-        try:
-            # todo rework
-            client = pymongo.MongoClient(self.dyn_server)
-            dyn_client_db = client[self.dyn_db]
-            dyn_collection = dyn_client_db[collection]
-            if login_steam:
-                steam_id = str(login)
-                existing_document = dyn_collection.find_one({'steamid': steam_id})
-            else:
-                user_id = str(login)
-                existing_document = dyn_collection.find_one({"user_id": user_id})
-            if existing_document:
-                update_query = {'$set': items_dict}
-                if login_steam:
-                    dyn_collection.update_one({'steamid': steam_id}, update_query)
-                else:
-                    dyn_collection.update_one({"user_id": user_id}, update_query)
-                client.close()
-                return {"status": "success", "message": "Data updated"}
-            else:
-                print(f"No user found with steamid: {steam_id}")
-                client.close()
-                return None
-        except Exception as e:
-            print(e)
-            # logger.graylog_logger(level="error", handler="mongo_write_data_with_list", message=e)
             return None
 
 

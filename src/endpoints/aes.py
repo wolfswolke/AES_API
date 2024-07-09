@@ -44,11 +44,9 @@ def get_aes(game):
             mainKey = data["mainKey"]
             dynamicKeys = data["dynamicKeys"]
             token = data["token"]
-            if token != "asdasdasdasdasdasdadsasd":
-                return jsonify({"error": "Invalid Token"})
-            uploader = "TEST_USER"
-            # todo add real uploader check code
-            # if aes_collection is NONE or empty error
+            ret_val = mongo.validate_token(token)
+            if ret_val["status"] == "error":
+                return jsonify(ret_val)
             if dynamicKeys:
                 for key_object in dynamicKeys:
                     for aes_keys in key_object:
@@ -56,7 +54,7 @@ def get_aes(game):
                             return jsonify({"error": "Invalid AES Item"})
             else:
                 dynamicKeys = []
-            ret = mongo.add_aes(mainKey, game, dynamicKeys, uploader)
+            ret = mongo.add_aes(mainKey, game, dynamicKeys, ret_val["user_id"])
             if not ret:
                 return jsonify({"error": "Failed to add AES Item"})
             return jsonify({"status": "success", "message": "AES Item added"})
