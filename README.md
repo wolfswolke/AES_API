@@ -5,6 +5,22 @@ This tool was made with FModel in mind but the FModel integration is not finishe
 
 The API is hosted at: https://aes.zkwolf.com/
 
+## Usage with FModel
+
+If you are using FModel you can use the API to get the keys for the game you are trying to decrypt.
+
+1. Get your game from the API: https://aes.zkwolf.com/api/v1/aes/GAME_NAME (remove /GAME_NAME to get a list of all games)
+2. Copy that URL and in FModel go to "Settings" -> "Endpoint Configuration" -> "AES" 
+
+![SettingsPage](docs/AES_Button.png)
+3. Paste the URL in the "AES" field and also enter `$.['mainKey','dynamicKeys']` under Expression 
+
+![EndpointConfig](docs/Endpoint_Conf.png)
+4. After you have done that go back and click "Directory" -> "AES" and click Refresh 
+
+![DirectoryPage](docs/RefreshAES.png)
+5. Click OK and have fun!
+
 ## Using the API
 
 ### Get a list of all games
@@ -59,7 +75,6 @@ GET https://aes.zkwolf.com/api/v1/aes/HYENAS
 ```
 
 ## TODO
-* Finish FModel integration
 * Add a way to update games (include HTML)
 * Add a way to delete games (include HTML)
 * Add a HTML page to add games
