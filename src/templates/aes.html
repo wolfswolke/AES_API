@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game AES Key Submission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .status-success {
+            color: green;
+        }
+        .status-error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Submit Game AES Key</h1>
+    <form id="aesForm">
+        <label for="gameName">Game Name:</label>
+        <input type="text" id="gameName" name="gameName" required><br><br>
+
+        <label for="mainKey">Main Key:</label>
+        <input type="text" id="mainKey" name="mainKey" required><br><br>
+
+        <div id="dynamicKeysContainer">
+            <h3>Dynamic Keys</h3>
+            <div class="dynamicKey">
+                <label for="guid">GUID:</label>
+                <input type="text" name="guid" required>
+                <label for="name">Name:</label>
+                <input type="text" name="name" required>
+                <label for="key">Key:</label>
+                <input type="text" name="key" required>
+                <button type="button" onclick="removeDynamicKey(this)">Remove</button>
+            </div>
+        </div>
+        <button type="button" onclick="addDynamicKey()">Add Dynamic Key</button><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+    <div id="statusMessage"></div>
+
+    <script>
+        function addDynamicKey() {
+            const container = document.getElementById('dynamicKeysContainer');
+            const newKeyDiv = document.createElement('div');
+            newKeyDiv.className = 'dynamicKey';
+            newKeyDiv.innerHTML = `
+                <label for="guid">GUID:</label>
+                <input type="text" name="guid" required>
+                <label for="name">Name:</label>
+                <input type="text" name="name" required>
+                <label for="key">Key:</label>
+                <input type="text" name="key" required>
+                <button type="button" onclick="removeDynamicKey(this)">Remove</button>
+            `;
+            container.appendChild(newKeyDiv);
+        }
+
+        function removeDynamicKey(button) {
+            const keyDiv = button.parentElement;
+            keyDiv.remove();
+        }
+
+        document.getElementById('aesForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const gameName = document.getElementById('gameName').value;
+            const mainKey = document.getElementById('mainKey').value;
+            const dynamicKeysDivs = document.getElementsByClassName('dynamicKey');
+            const dynamicKeys = [];
+
+            for (let i = 0; i < dynamicKeysDivs.length; i++) {
+                const guid = dynamicKeysDivs[i].querySelector('input[name="guid"]').value;
+                const name = dynamicKeysDivs[i].querySelector('input[name="name"]').value;
+                const key = dynamicKeysDivs[i].querySelector('input[name="key"]').value;
+                dynamicKeys.push({ guid, name, key });
+            }
+
+            const data = {
+                mainKey,
+                dynamicKeys
+            };
+
+            fetch(`/api/v1/aes/${gameName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusMessageDiv = document.getElementById('statusMessage');
+                statusMessageDiv.innerHTML = data.message;
+                statusMessageDiv.className = data.status === 'success' ? 'status-success' : 'status-error';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

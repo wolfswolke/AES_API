@@ -1,7 +1,7 @@
 from flask_definitions import *
 
 
-@app.route('/api/v1/aes', methods=['GET'])
+@app.route('/api/v1/aes', methods=['GET'], strict_slashes=False)
 def get_all_aes():
     try:
         aes_list = mongo.get_all_aes()
@@ -17,7 +17,7 @@ def get_all_aes():
         return jsonify([]), 500
 
 
-@app.route('/api/v1/aes/<game>', methods=['GET', 'POST'])
+@app.route('/api/v1/aes/<game>', methods=['GET', 'POST'], strict_slashes=False)
 def get_aes(game):
     if not game:
         return jsonify({"status": "error", "message": "Game name not specified."}), 400
@@ -41,23 +41,32 @@ def get_aes(game):
     if request.method == 'POST':
         try:
             data = request.get_json()
+            try:
+                token = data["token"]
+                ret_val = mongo.validate_token(token)
+            except KeyError:
+                if 'session' in request.cookies:
+                    user_id = session_manager.get_user_id(request.cookies['session'])
+                    if user_id is None:
+                        return jsonify({"status": "error", "message": "Not Authenticated"}), 401
+                else:
+                    return jsonify({"status": "error", "message": "Not Authenticated"}), 401
+                ret_val = {"status": "success", "message": "Token found", "user_id": user_id}
+            if ret_val["status"] == "error":
+                return jsonify(ret_val), 400
             mainKey = data["mainKey"]
             if not mainKey.startswith("0x") or len(mainKey) != 66:
                 return jsonify({"status": "error", "message": "Invalid Main Key"}), 400
             dynamicKeys = data["dynamicKeys"]
-            token = data["token"]
-            ret_val = mongo.validate_token(token)
-            if ret_val["status"] == "error":
-                return jsonify(ret_val), 400
             if dynamicKeys:
                 for key_object in dynamicKeys:
-                    for aes_keys in key_object:
-                        if not aes_keys.startswith("0x") or len(aes_keys) != 66:
-                            return jsonify({"status": "error", "message": "Invalid AES Key in dynamicKeys"}), 400
-                        if not aes_keys["name"].endswith(".pak"):
-                            return jsonify({"status": "error", "message": "Invalid AES Name in dynamicKeys"}), 400
-                        if aes_keys not in ["guid", "key", "name"]:
+                    if not key_object["key"].startswith("0x") or len(key_object["key"]) != 66:
+                        return jsonify({"status": "error", "message": "Invalid AES Key in dynamicKeys"}), 400
+                    if key_object["name"].endswith(".pak") or key_object["name"].endswith(".utoc"):
+                        if not "name" in key_object or not "key" in key_object or not "guid" in key_object:
                             return jsonify({"status": "error", "message": "Missing required parameter in dynamicKeys"}), 400
+                    else:
+                        return jsonify({"status": "error", "message": "Invalid AES Name in dynamicKeys"}), 400
             else:
                 dynamicKeys = []
             ret = mongo.add_aes(mainKey, game, dynamicKeys, ret_val["user_id"])
