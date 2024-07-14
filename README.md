@@ -35,47 +35,14 @@ If you want to add a new game you need to register a user.
 ### POST a new game
 Games are hosted under https://aes.zkwolf.com/api/v1/aes/
 
-To add a new game POST a request to that URL with the GameName after the slash.
+You can register a account under https://aes.zkwolf.com/profile.
 
-```
-POST https://aes.zkwolf.com/api/v1/aes/HYENAS
-{
-   "dynamicKeys":[],
-   "mainKey":"0x35BA3129A49E9E0372E3401BB50A6A808E6C5B60DCC2D339C390B4C0C494BD43",
-   "unloaded":[],
-   "version":"0"
-}
-```
+After that you can use the "Go to AES Page" button to add a new game via the form.
 
-If your game has multiple keys you can add them to the dynamicKeys array.
-
-```
-POST https://aes.zkwolf.com/api/v1/aes/HYENAS
-{
-   "dynamicKeys":[
-      {
-         "guid":"00000000-00000000-00000000-00000000",
-         "key":"0x35BA3129A49E9E0372E3401BB50A6A808E6C5B60DCC2D339C390B4C0C494BD43",
-         "name":"pakchunk0-WindowsClient.pak"
-      }
-   ],
-   "mainKey":"0x35BA3129A49E9E0372E3401BB50A6A808E6C5B60DCC2D339C390B4C0C494BD43",
-   "unloaded":[
-      
-   ],
-   "version":"0.1"
-}
-```
-
+![AddGame](docs/Add_Game.png)
 ### GET a game
-To get a game you can use the same URL but with GET and no body.
-
-```
-GET https://aes.zkwolf.com/api/v1/aes/HYENAS
-```
+To get a games key you can either use FModel as described above or use the API directly.
 
 ## TODO
 * Add a way to update games (include HTML)
 * Add a way to delete games (include HTML)
-* Add a HTML page to add games
-* Make the HTML look better (a lot...)
