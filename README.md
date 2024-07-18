@@ -30,7 +30,7 @@ The Game list is hosted under https://aes.zkwolf.com/api/v1/aes/
 If you want to add a new game you need to register a user.
 * go to https://aes.zkwolf.com/profile and register a user.
 * Copy your "token"
-* With a tool like Postman or insomnia POST a new game!
+* You can either post a new game with the API in json or via the HTML page below!
 
 ### POST a new game
 Games are hosted under https://aes.zkwolf.com/api/v1/aes/
