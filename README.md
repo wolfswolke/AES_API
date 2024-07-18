@@ -1,7 +1,7 @@
 # AES_API
 API for hosting Unreal Engine PAK Encryption keys.
 
-This tool was made with FModel in mind but the FModel integration is not finished yet.
+This tool was made with FModel in mind. Please read the guide below to use it.
 
 The API is hosted at: https://aes.zkwolf.com/
 
