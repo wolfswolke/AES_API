@@ -1,0 +1,6 @@
+.idea
+src/test/
+src/config/config.yaml
+*.pyc
+/src/app/tmp
+/src/bms/
