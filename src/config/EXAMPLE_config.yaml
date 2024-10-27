@@ -1,0 +1,16 @@
+global:
+  version: 0.0.1
+  name: aes_api
+local_ips:
+  - 111.111.111.111
+  - 000.000.000.000
+mongo:
+  host: mongodb://localhost:27017/
+  db: db_name
+  aes_collection: aes_collection
+  user_collection: user_collection
+webhook:
+  discord:
+    use: false
+    url:
+      - https://discord.com/api/webhooks/111/asdasdasd

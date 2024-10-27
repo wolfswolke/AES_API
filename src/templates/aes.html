@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game AES Key Submission</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1, h3 {
+            color: #ffffff;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #b3b3b3;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #262626;
+            color: #ffffff;
+        }
+        button {
+            background-color: #6200ea;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #3700b3;
+        }
+        .status-success {
+            color: green;
+        }
+        .status-error {
+            color: red;
+        }
+        .dynamicKey {
+            margin-bottom: 10px;
+        }
+        .dynamicKey button {
+            background-color: #b00020;
+        }
+        .dynamicKey button:hover {
+            background-color: #870000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Game AES Key</h1>
+        <form id="aesForm">
+            <label for="gameName">Game Name:</label>
+            <input type="text" id="gameName" name="gameName" required><br>
+
+            <label for="mainKey">Main Key:</label>
+            <input type="text" id="mainKey" name="mainKey" required><br>
+
+            <div id="dynamicKeysContainer">
+                <h3>Dynamic Keys</h3>
+                <div class="dynamicKey">
+                    <label for="guid">GUID:</label>
+                    <input type="text" name="guid" required>
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" required>
+                    <label for="key">Key:</label>
+                    <input type="text" name="key" required>
+                    <button type="button" onclick="removeDynamicKey(this)">Remove Dynamic Key</button>
+                </div>
+            </div>
+            <button type="button" onclick="addDynamicKey()">Add Dynamic Key</button><br><br>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        function addDynamicKey() {
+            const container = document.getElementById('dynamicKeysContainer');
+            const newKeyDiv = document.createElement('div');
+            newKeyDiv.className = 'dynamicKey';
+            newKeyDiv.innerHTML = `
+                <label for="guid">GUID:</label>
+                <input type="text" name="guid" required>
+                <label for="name">Name:</label>
+                <input type="text" name="name" required>
+                <label for="key">Key:</label>
+                <input type="text" name="key" required>
+                <button type="button" onclick="removeDynamicKey(this)">Remove Dynamic Key</button>
+            `;
+            container.appendChild(newKeyDiv);
+        }
+
+        function removeDynamicKey(button) {
+            const keyDiv = button.parentElement;
+            keyDiv.remove();
+        }
+
+        document.getElementById('aesForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const gameName = document.getElementById('gameName').value;
+            const mainKey = document.getElementById('mainKey').value;
+            const dynamicKeysDivs = document.getElementsByClassName('dynamicKey');
+            const dynamicKeys = [];
+
+            for (let i = 0; i < dynamicKeysDivs.length; i++) {
+                const guid = dynamicKeysDivs[i].querySelector('input[name="guid"]').value;
+                const name = dynamicKeysDivs[i].querySelector('input[name="name"]').value;
+                const key = dynamicKeysDivs[i].querySelector('input[name="key"]').value;
+                dynamicKeys.push({ guid, name, key });
+            }
+
+            const data = {
+                mainKey,
+                dynamicKeys
+            };
+
+            fetch(`/api/v1/aes/${gameName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusMessageDiv = document.getElementById('statusMessage');
+                statusMessageDiv.innerHTML = data.message;
+                statusMessageDiv.className = data.status === 'success' ? 'status-success' : 'status-error';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

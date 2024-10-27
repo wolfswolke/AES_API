@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /profile
+Disallow: /aes
+Disallow: /api/v1/aes
+
+User-agent: serpstatbot
+Disallow: /
